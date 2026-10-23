@@ -12,6 +12,7 @@ define('NH_THEME_DIR', get_template_directory());
 define('NH_THEME_URI', get_template_directory_uri());
 
 require_once NH_THEME_DIR . '/inc/default-data.php';
+require_once NH_THEME_DIR . '/inc/sections.php';
 require_once NH_THEME_DIR . '/inc/meta-boxes.php';
 require_once NH_THEME_DIR . '/inc/customizer.php';
 require_once NH_THEME_DIR . '/inc/admin-settings.php';

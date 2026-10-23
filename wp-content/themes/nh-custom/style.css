@@ -167,3 +167,104 @@ body {
   max-width: 100%;
   padding: 0;
 }
+
+/* Remove Elementor default gaps around full-width NH sections */
+.elementor-widget-container > section,
+.elementor-column-gap-default > .elementor-column > .elementor-element-populated {
+  padding: 0 !important;
+}
+
+/* RICCIEP Timeline Layout (Bulletproof in both frontend & Elementor narrow preview) */
+.nh-ricciep-trunk {
+  position: absolute;
+  left: 2.5rem;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+  background: linear-gradient(to bottom, rgba(197,160,89,0.1), rgba(197,160,89,0.6), rgba(197,160,89,0.1));
+  border-radius: 9999px;
+}
+
+.nh-ricciep-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding-left: 6rem;
+}
+
+.nh-ricciep-node {
+  position: absolute;
+  left: 2.5rem;
+  transform: translateX(-50%);
+  width: 4rem;
+  height: 4rem;
+  background-color: var(--color-navy);
+  border: 5px solid #ffffff;
+  box-shadow: 0 0 0 4px rgba(197,160,89,0.3), 0 20px 25px -5px rgba(0,0,0,0.4);
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+}
+
+.nh-ricciep-card-col {
+  width: 100%;
+}
+
+.nh-ricciep-card-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .nh-ricciep-trunk {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .nh-ricciep-row {
+    padding-left: 0;
+    justify-content: flex-end;
+  }
+
+  .nh-ricciep-row.is-left {
+    justify-content: flex-start;
+  }
+
+  .nh-ricciep-node {
+    left: 50%;
+    width: 6.5rem;
+    height: 6.5rem;
+    border-width: 6px;
+  }
+
+  .nh-ricciep-card-col {
+    width: calc(50% - 4.75rem);
+  }
+
+  .nh-ricciep-row.is-left .nh-ricciep-card-col {
+    text-align: right;
+  }
+
+  .nh-ricciep-row.is-right .nh-ricciep-card-col {
+    text-align: left;
+  }
+
+  .nh-ricciep-card-inner {
+    flex-direction: row;
+    align-items: center;
+    gap: 2rem;
+  }
+
+  .nh-ricciep-row.is-left .nh-ricciep-icon {
+    order: 2;
+  }
+
+  .nh-ricciep-row.is-left .nh-ricciep-text {
+    order: 1;
+  }
+}
