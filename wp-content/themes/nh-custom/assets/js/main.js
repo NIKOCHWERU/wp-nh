@@ -62,12 +62,19 @@
 
         const dict = translations[locale];
         if (dict) {
-            // Update all elements with data-nh-i18n
+            // Update all elements with data-nh-i18n while preserving custom Elementor Indonesian edits
             document.querySelectorAll('[data-nh-i18n]').forEach(function (el) {
-                const key = el.getAttribute('data-nh-i18n');
-                const val = getNestedTranslation(dict, key);
-                if (val !== null) {
-                    el.textContent = val;
+                if (!el.hasAttribute('data-nh-id-orig')) {
+                    el.setAttribute('data-nh-id-orig', el.textContent);
+                }
+                if (locale === 'id') {
+                    el.textContent = el.getAttribute('data-nh-id-orig');
+                } else {
+                    const key = el.getAttribute('data-nh-i18n');
+                    const val = getNestedTranslation(dict, key);
+                    if (val !== null) {
+                        el.textContent = val;
+                    }
                 }
             });
 

@@ -170,8 +170,19 @@ body {
 
 /* Remove Elementor default gaps around full-width NH sections */
 .elementor-widget-container > section,
-.elementor-column-gap-default > .elementor-column > .elementor-element-populated {
+.elementor-column-gap-default > .elementor-column > .elementor-element-populated,
+.nh-elementor-canvas .e-con,
+.nh-elementor-canvas .e-con > .e-con-inner {
+  --padding-top: 0px;
+  --padding-bottom: 0px;
+  --padding-left: 0px;
+  --padding-right: 0px;
+  --con-padding-top: 0px;
+  --con-padding-bottom: 0px;
+  --con-padding-left: 0px;
+  --con-padding-right: 0px;
   padding: 0 !important;
+  max-width: 100% !important;
 }
 
 /* RICCIEP Timeline Layout (Bulletproof in both frontend & Elementor narrow preview) */

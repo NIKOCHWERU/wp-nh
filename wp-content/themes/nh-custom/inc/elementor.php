@@ -2,8 +2,10 @@
 /**
  * Elementor (Free Version) Complete Integration:
  * 1. Registers ALL 10 Narasumber Hukum sections as native clickable & editable Elementor Widgets
- * 2. Auto-populates Elementor page data (`_elementor_data`) when user opens "Edit with Elementor" on Beranda/Tentang/Kontak,
- *    so EVERY section on the page is immediately clickable, editable, movable, and deletable in Elementor!
+ *    using 100% flat TEXT/TEXTAREA controls for maximum Elementor 4.x stability and ease of use.
+ * 2. Auto-populates Elementor page data (`_elementor_data`) using native Flexbox Containers (`container`)
+ *    and non-empty associative settings objects so every section on Beranda & Tentang Kami can be
+ *    clicked, edited, reordered, or deleted directly on the Elementor canvas.
  */
 
 if (!defined('ABSPATH')) {
@@ -25,7 +27,7 @@ function nh_render_consultation_cta_shortcode() {
     return ob_get_clean();
 }
 
-// Register NH Category at the very top of Elementor widget panel
+// Register NH Category in Elementor widget panel
 add_action('elementor/elements/categories_registered', 'nh_add_elementor_widget_categories');
 function nh_add_elementor_widget_categories($elements_manager) {
     $elements_manager->add_category(
@@ -38,8 +40,9 @@ function nh_add_elementor_widget_categories($elements_manager) {
 }
 
 /**
- * Helper to build default Elementor JSON structure for Homepage ("Beranda") so when user clicks "Edit with Elementor",
- * all 9 sections are already live Elementor widgets inside the canvas!
+ * Helper to build default Elementor JSON structure for Homepage ("Beranda")
+ * Uses native Elementor 4.x Flexbox Container + non-empty associative settings
+ * so json_decode(..., true) -> wp_json_encode() always outputs JSON Objects {} and never []
  */
 function nh_build_default_beranda_elementor_data() {
     $widgets = [
@@ -54,74 +57,78 @@ function nh_build_default_beranda_elementor_data() {
         'nh_contact_section_widget',
     ];
 
-    $sections = [];
+    $containers = [];
     foreach ($widgets as $idx => $w_name) {
-        $sections[] = [
-            'id'       => substr(md5('nh_sec_' . $idx), 0, 7),
-            'elType'   => 'section',
+        $containers[] = [
+            'id'       => substr(md5('nh_con4_' . $idx), 0, 7),
+            'elType'   => 'container',
+            'isInner'  => false,
             'settings' => [
-                'layout'  => 'full_width',
-                'gap'     => 'no',
-                'padding' => ['unit' => 'px', 'top' => '0', 'right' => '0', 'bottom' => '0', 'left' => '0', 'isLinked' => true],
+                'content_width' => 'full',
+                'padding'       => [
+                    'unit'     => 'px',
+                    'top'      => '0',
+                    'right'    => '0',
+                    'bottom'   => '0',
+                    'left'     => '0',
+                    'isLinked' => true,
+                ],
             ],
             'elements' => [
                 [
-                    'id'       => substr(md5('nh_col_' . $idx), 0, 7),
-                    'elType'   => 'column',
-                    'settings' => [
-                        '_column_size' => 100,
-                        'padding'      => ['unit' => 'px', 'top' => '0', 'right' => '0', 'bottom' => '0', 'left' => '0', 'isLinked' => true],
+                    'id'         => substr(md5('nh_wid4_' . $idx), 0, 7),
+                    'elType'     => 'widget',
+                    'widgetType' => $w_name,
+                    'settings'   => [
+                        '_nh_seeded' => 'v4',
                     ],
-                    'elements' => [
-                        [
-                            'id'         => substr(md5('nh_wid_' . $idx), 0, 7),
-                            'elType'     => 'widget',
-                            'widgetType' => $w_name,
-                            'settings'   => [],
-                            'elements'   => [],
-                        ],
-                    ],
+                    'elements'   => [],
                 ],
             ],
         ];
     }
 
-    return wp_json_encode($sections);
+    return wp_json_encode($containers);
 }
 
 function nh_build_default_tentang_elementor_data() {
-    $sections = [
+    $containers = [
         [
-            'id'       => substr(md5('nh_tentang_sec'), 0, 7),
-            'elType'   => 'section',
-            'settings' => ['layout' => 'full_width', 'gap' => 'no'],
+            'id'       => substr(md5('nh_tentang_con4'), 0, 7),
+            'elType'   => 'container',
+            'isInner'  => false,
+            'settings' => [
+                'content_width' => 'full',
+                'padding'       => [
+                    'unit'     => 'px',
+                    'top'      => '0',
+                    'right'    => '0',
+                    'bottom'   => '0',
+                    'left'     => '0',
+                    'isLinked' => true,
+                ],
+            ],
             'elements' => [
                 [
-                    'id'       => substr(md5('nh_tentang_col'), 0, 7),
-                    'elType'   => 'column',
-                    'settings' => ['_column_size' => 100],
-                    'elements' => [
-                        [
-                            'id'         => substr(md5('nh_tentang_wid'), 0, 7),
-                            'elType'     => 'widget',
-                            'widgetType' => 'nh_about_page_widget',
-                            'settings'   => [],
-                            'elements'   => [],
-                        ],
+                    'id'         => substr(md5('nh_tentang_wid4'), 0, 7),
+                    'elType'     => 'widget',
+                    'widgetType' => 'nh_about_page_widget',
+                    'settings'   => [
+                        '_nh_seeded' => 'v4',
                     ],
+                    'elements'   => [],
                 ],
             ],
         ],
     ];
-    return wp_json_encode($sections);
+    return wp_json_encode($containers);
 }
 
 /**
- * Automatically seed Elementor widgets into Beranda / Tentang Kami if _elementor_data is empty when opening Elementor
+ * Automatically seed/upgrade Elementor widgets into Beranda & Tentang Kami (once per seed version 'v4')
  */
 add_action('init', 'nh_auto_seed_elementor_canvas_data');
 function nh_auto_seed_elementor_canvas_data() {
-    // Check if Beranda page exists and has no Elementor widgets yet
     $beranda = get_page_by_path('beranda', OBJECT, 'page');
     if (!$beranda) {
         $front_id = intval(get_option('page_on_front'));
@@ -130,27 +137,39 @@ function nh_auto_seed_elementor_canvas_data() {
         }
     }
     if ($beranda) {
-        $existing_data = get_post_meta($beranda->ID, '_elementor_data', true);
-        if (empty($existing_data) || $existing_data === '[]') {
+        $seed_ver = get_post_meta($beranda->ID, '_nh_elementor_seed_v', true);
+        $existing = get_post_meta($beranda->ID, '_elementor_data', true);
+        if ($seed_ver !== 'v4' || empty($existing) || $existing === '[]') {
             update_post_meta($beranda->ID, '_elementor_edit_mode', 'builder');
             update_post_meta($beranda->ID, '_elementor_template_type', 'wp-page');
+            if (defined('ELEMENTOR_VERSION')) {
+                update_post_meta($beranda->ID, '_elementor_version', ELEMENTOR_VERSION);
+            }
             update_post_meta($beranda->ID, '_elementor_data', wp_slash(nh_build_default_beranda_elementor_data()));
+            delete_post_meta($beranda->ID, '_elementor_css');
+            update_post_meta($beranda->ID, '_nh_elementor_seed_v', 'v4');
         }
     }
 
     $tentang = get_page_by_path('tentang', OBJECT, 'page');
     if ($tentang) {
+        $seed_ver_t = get_post_meta($tentang->ID, '_nh_elementor_seed_v', true);
         $existing_t = get_post_meta($tentang->ID, '_elementor_data', true);
-        if (empty($existing_t) || $existing_t === '[]') {
+        if ($seed_ver_t !== 'v4' || empty($existing_t) || $existing_t === '[]') {
             update_post_meta($tentang->ID, '_elementor_edit_mode', 'builder');
             update_post_meta($tentang->ID, '_elementor_template_type', 'wp-page');
+            if (defined('ELEMENTOR_VERSION')) {
+                update_post_meta($tentang->ID, '_elementor_version', ELEMENTOR_VERSION);
+            }
             update_post_meta($tentang->ID, '_elementor_data', wp_slash(nh_build_default_tentang_elementor_data()));
+            delete_post_meta($tentang->ID, '_elementor_css');
+            update_post_meta($tentang->ID, '_nh_elementor_seed_v', 'v4');
         }
     }
 }
 
 /**
- * Register All 10 Editable Elementor Widgets
+ * Register All 10 Editable Elementor Widgets (100% Flat Controls — Zero Repeater Crashes)
  */
 add_action('elementor/widgets/register', 'nh_register_elementor_widgets');
 function nh_register_elementor_widgets($widgets_manager) {
@@ -243,62 +262,34 @@ function nh_register_elementor_widgets($widgets_manager) {
                 'default' => $t['subtitle'],
             ]);
 
-            $rep = new \Elementor\Repeater();
-            $rep->add_control('title', [
-                'label'   => 'Nama Layanan',
-                'type'    => \Elementor\Controls_Manager::TEXT,
-                'default' => 'Bidang Hukum',
-            ]);
-            $rep->add_control('desc', [
-                'label'   => 'Deskripsi Singkat',
-                'type'    => \Elementor\Controls_Manager::TEXTAREA,
-                'default' => '',
-            ]);
-            $rep->add_control('image', [
-                'label'   => 'URL Gambar Background',
-                'type'    => \Elementor\Controls_Manager::TEXT,
-                'default' => 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=800&q=80',
-            ]);
-            $rep->add_control('slug', [
-                'label'   => 'Slug Link Layanan (hukum / perizinan / pelatihan-sdm)',
-                'type'    => \Elementor\Controls_Manager::TEXT,
-                'default' => 'hukum',
-            ]);
-            $rep->add_control('icon', [
-                'label'   => 'Ikon (scale / file-text / shield-check)',
-                'type'    => \Elementor\Controls_Manager::TEXT,
-                'default' => 'scale',
-            ]);
+            $defaults = [
+                1 => ['slug' => 'hukum',         'title' => $t['legal_title'],     'desc' => $t['legal_desc'],     'img' => 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=800&q=80'],
+                2 => ['slug' => 'perizinan',     'title' => $t['licensing_title'], 'desc' => $t['licensing_desc'], 'img' => 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=800&q=80'],
+                3 => ['slug' => 'pelatihan-sdm', 'title' => $t['hr_title'],        'desc' => $t['hr_desc'],        'img' => 'https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=800&q=80'],
+            ];
 
-            $this->add_control('items', [
-                'label'       => 'Daftar Kartu Layanan',
-                'type'        => \Elementor\Controls_Manager::REPEATER,
-                'fields'      => $rep->get_controls(),
-                'default'     => [
-                    [
-                        'slug'  => 'hukum',
-                        'icon'  => 'scale',
-                        'title' => $t['legal_title'],
-                        'desc'  => $t['legal_desc'],
-                        'image' => 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=800&q=80',
-                    ],
-                    [
-                        'slug'  => 'perizinan',
-                        'icon'  => 'file-text',
-                        'title' => $t['licensing_title'],
-                        'desc'  => $t['licensing_desc'],
-                        'image' => 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=800&q=80',
-                    ],
-                    [
-                        'slug'  => 'pelatihan-sdm',
-                        'icon'  => 'shield-check',
-                        'title' => $t['hr_title'],
-                        'desc'  => $t['hr_desc'],
-                        'image' => 'https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=800&q=80',
-                    ],
-                ],
-                'title_field' => '{{{ title }}}',
-            ]);
+            foreach ($defaults as $i => $d) {
+                $this->add_control("srv_{$i}_title", [
+                    'label'   => "Kartu {$i} — Judul Layanan",
+                    'type'    => \Elementor\Controls_Manager::TEXT,
+                    'default' => $d['title'],
+                ]);
+                $this->add_control("srv_{$i}_desc", [
+                    'label'   => "Kartu {$i} — Deskripsi",
+                    'type'    => \Elementor\Controls_Manager::TEXTAREA,
+                    'default' => $d['desc'],
+                ]);
+                $this->add_control("srv_{$i}_image", [
+                    'label'   => "Kartu {$i} — URL Gambar",
+                    'type'    => \Elementor\Controls_Manager::TEXT,
+                    'default' => $d['img'],
+                ]);
+                $this->add_control("srv_{$i}_slug", [
+                    'label'   => "Kartu {$i} — Slug Link",
+                    'type'    => \Elementor\Controls_Manager::TEXT,
+                    'default' => $d['slug'],
+                ]);
+            }
             $this->end_controls_section();
         }
 
@@ -331,25 +322,19 @@ function nh_register_elementor_widgets($widgets_manager) {
                 'default' => $t['subtitle'],
             ]);
 
-            $rep = new \Elementor\Repeater();
-            $rep->add_control('title', [
-                'label'   => 'Judul Kartu',
-                'type'    => \Elementor\Controls_Manager::TEXT,
-                'default' => '',
-            ]);
-            $rep->add_control('desc', [
-                'label'   => 'Deskripsi Kartu',
-                'type'    => \Elementor\Controls_Manager::TEXTAREA,
-                'default' => '',
-            ]);
-
-            $this->add_control('items', [
-                'label'       => 'Kartu Keunggulan',
-                'type'        => \Elementor\Controls_Manager::REPEATER,
-                'fields'      => $rep->get_controls(),
-                'default'     => $t['items'],
-                'title_field' => '{{{ title }}}',
-            ]);
+            foreach ($t['items'] as $idx => $item) {
+                $n = $idx + 1;
+                $this->add_control("item_{$n}_title", [
+                    'label'   => "Keunggulan {$n} — Judul",
+                    'type'    => \Elementor\Controls_Manager::TEXT,
+                    'default' => $item['title'],
+                ]);
+                $this->add_control("item_{$n}_desc", [
+                    'label'   => "Keunggulan {$n} — Deskripsi",
+                    'type'    => \Elementor\Controls_Manager::TEXTAREA,
+                    'default' => $item['desc'],
+                ]);
+            }
             $this->end_controls_section();
         }
 
@@ -382,35 +367,24 @@ function nh_register_elementor_widgets($widgets_manager) {
                 'default' => $t['subtitle'],
             ]);
 
-            $rep = new \Elementor\Repeater();
-            $rep->add_control('initial', [
-                'label'   => 'Huruf Lingkaran Tengah (R/I/C/E/P)',
-                'type'    => \Elementor\Controls_Manager::TEXT,
-                'default' => 'R',
-            ]);
-            $rep->add_control('name', [
-                'label'   => 'Nama Nilai',
-                'type'    => \Elementor\Controls_Manager::TEXT,
-                'default' => 'RESPONSIVE (Responsif)',
-            ]);
-            $rep->add_control('desc', [
-                'label'   => 'Deskripsi Nilai',
-                'type'    => \Elementor\Controls_Manager::TEXTAREA,
-                'default' => '',
-            ]);
-            $rep->add_control('icon', [
-                'label'   => 'Ikon (zap / file-text / message-circle / lightbulb / rocket / target / heart)',
-                'type'    => \Elementor\Controls_Manager::TEXT,
-                'default' => 'zap',
-            ]);
-
-            $this->add_control('items', [
-                'label'       => 'Daftar Nilai RICCIEP',
-                'type'        => \Elementor\Controls_Manager::REPEATER,
-                'fields'      => $rep->get_controls(),
-                'default'     => $t['items'],
-                'title_field' => '{{{ initial }}} - {{{ name }}}',
-            ]);
+            foreach ($t['items'] as $idx => $val) {
+                $n = $idx + 1;
+                $this->add_control("val_{$n}_initial", [
+                    'label'   => "Nilai {$n} — Huruf Lingkaran Tengah",
+                    'type'    => \Elementor\Controls_Manager::TEXT,
+                    'default' => $val['initial'],
+                ]);
+                $this->add_control("val_{$n}_name", [
+                    'label'   => "Nilai {$n} — Nama Nilai",
+                    'type'    => \Elementor\Controls_Manager::TEXT,
+                    'default' => $val['name'],
+                ]);
+                $this->add_control("val_{$n}_desc", [
+                    'label'   => "Nilai {$n} — Deskripsi",
+                    'type'    => \Elementor\Controls_Manager::TEXTAREA,
+                    'default' => $val['desc'],
+                ]);
+            }
             $this->end_controls_section();
         }
 
@@ -443,30 +417,24 @@ function nh_register_elementor_widgets($widgets_manager) {
                 'default' => $t['subtitle'],
             ]);
 
-            $rep = new \Elementor\Repeater();
-            $rep->add_control('name', [
-                'label'   => 'Nama Klien',
-                'type'    => \Elementor\Controls_Manager::TEXT,
-                'default' => '',
-            ]);
-            $rep->add_control('role', [
-                'label'   => 'Peran / Jabatan',
-                'type'    => \Elementor\Controls_Manager::TEXT,
-                'default' => 'Klien',
-            ]);
-            $rep->add_control('text', [
-                'label'   => 'Isi Testimoni',
-                'type'    => \Elementor\Controls_Manager::TEXTAREA,
-                'default' => '',
-            ]);
-
-            $this->add_control('items', [
-                'label'       => 'Daftar Testimoni',
-                'type'        => \Elementor\Controls_Manager::REPEATER,
-                'fields'      => $rep->get_controls(),
-                'default'     => get_option('nh_custom_testimonials', $t['items']),
-                'title_field' => '{{{ name }}}',
-            ]);
+            foreach ($t['items'] as $idx => $item) {
+                $n = $idx + 1;
+                $this->add_control("testi_{$n}_name", [
+                    'label'   => "Testimoni {$n} — Nama Klien",
+                    'type'    => \Elementor\Controls_Manager::TEXT,
+                    'default' => $item['name'],
+                ]);
+                $this->add_control("testi_{$n}_role", [
+                    'label'   => "Testimoni {$n} — Peran/Jabatan",
+                    'type'    => \Elementor\Controls_Manager::TEXT,
+                    'default' => $item['role'],
+                ]);
+                $this->add_control("testi_{$n}_text", [
+                    'label'   => "Testimoni {$n} — Isi Testimoni",
+                    'type'    => \Elementor\Controls_Manager::TEXTAREA,
+                    'default' => $item['text'],
+                ]);
+            }
             $this->end_controls_section();
         }
 
@@ -499,30 +467,24 @@ function nh_register_elementor_widgets($widgets_manager) {
                 'default' => $t['subtitle'],
             ]);
 
-            $rep = new \Elementor\Repeater();
-            $rep->add_control('step', [
-                'label'   => 'Nomor Langkah',
-                'type'    => \Elementor\Controls_Manager::TEXT,
-                'default' => '01',
-            ]);
-            $rep->add_control('title', [
-                'label'   => 'Judul Langkah',
-                'type'    => \Elementor\Controls_Manager::TEXT,
-                'default' => '',
-            ]);
-            $rep->add_control('desc', [
-                'label'   => 'Deskripsi Langkah',
-                'type'    => \Elementor\Controls_Manager::TEXTAREA,
-                'default' => '',
-            ]);
-
-            $this->add_control('items', [
-                'label'       => 'Langkah-Langkah',
-                'type'        => \Elementor\Controls_Manager::REPEATER,
-                'fields'      => $rep->get_controls(),
-                'default'     => $t['items'],
-                'title_field' => '{{{ step }}} - {{{ title }}}',
-            ]);
+            foreach ($t['items'] as $idx => $step) {
+                $n = $idx + 1;
+                $this->add_control("step_{$n}_num", [
+                    'label'   => "Langkah {$n} — Nomor",
+                    'type'    => \Elementor\Controls_Manager::TEXT,
+                    'default' => $step['step'],
+                ]);
+                $this->add_control("step_{$n}_title", [
+                    'label'   => "Langkah {$n} — Judul",
+                    'type'    => \Elementor\Controls_Manager::TEXT,
+                    'default' => $step['title'],
+                ]);
+                $this->add_control("step_{$n}_desc", [
+                    'label'   => "Langkah {$n} — Deskripsi",
+                    'type'    => \Elementor\Controls_Manager::TEXTAREA,
+                    'default' => $step['desc'],
+                ]);
+            }
             $this->end_controls_section();
         }
 
@@ -550,25 +512,19 @@ function nh_register_elementor_widgets($widgets_manager) {
                 'default' => $t['title'],
             ]);
 
-            $rep = new \Elementor\Repeater();
-            $rep->add_control('q', [
-                'label'   => 'Pertanyaan',
-                'type'    => \Elementor\Controls_Manager::TEXT,
-                'default' => '',
-            ]);
-            $rep->add_control('a', [
-                'label'   => 'Jawaban',
-                'type'    => \Elementor\Controls_Manager::TEXTAREA,
-                'default' => '',
-            ]);
-
-            $this->add_control('items', [
-                'label'       => 'Daftar FAQ',
-                'type'        => \Elementor\Controls_Manager::REPEATER,
-                'fields'      => $rep->get_controls(),
-                'default'     => get_option('nh_custom_faqs', $t['items']),
-                'title_field' => '{{{ q }}}',
-            ]);
+            foreach ($t['items'] as $idx => $faq) {
+                $n = $idx + 1;
+                $this->add_control("faq_{$n}_q", [
+                    'label'   => "FAQ {$n} — Pertanyaan",
+                    'type'    => \Elementor\Controls_Manager::TEXT,
+                    'default' => $faq['q'],
+                ]);
+                $this->add_control("faq_{$n}_a", [
+                    'label'   => "FAQ {$n} — Jawaban",
+                    'type'    => \Elementor\Controls_Manager::TEXTAREA,
+                    'default' => $faq['a'],
+                ]);
+            }
             $this->end_controls_section();
         }
 
@@ -692,6 +648,14 @@ function nh_register_elementor_widgets($widgets_manager) {
                 'type'    => \Elementor\Controls_Manager::TEXT,
                 'default' => $t['tagline'],
             ]);
+            foreach ($t['description'] as $idx => $p_text) {
+                $n = $idx + 1;
+                $this->add_control("p{$n}", [
+                    'label'   => "Paragraf Profil {$n}",
+                    'type'    => \Elementor\Controls_Manager::TEXTAREA,
+                    'default' => $p_text,
+                ]);
+            }
             $this->add_control('vision_t', [
                 'label'   => 'Judul Visi',
                 'type'    => \Elementor\Controls_Manager::TEXT,
