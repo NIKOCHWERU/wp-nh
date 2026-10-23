@@ -1,0 +1,23 @@
+# Temporary reference clones (never commit source repo clone)
+_source_web_nh/
+_target_check/
+
+# Dependencies & Build Artifacts
+node_modules/
+vendor/
+
+# Environment & Secrets
+.env
+.env.*
+wp-config.php
+*.pem
+*.key
+*.sql
+*.sql.gz
+*.log
+
+# OS & Editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

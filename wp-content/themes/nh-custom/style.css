@@ -1,0 +1,169 @@
+/*
+Theme Name: Narasumber Hukum Custom (NH Custom)
+Theme URI: https://narasumberhukum.com
+Author: Narasumber Hukum Engineering Team
+Author URI: https://narasumberhukum.com
+Description: Custom WordPress Theme hasil migrasi 1:1 dari aplikasi Next.js Narasumber Hukum (Sentral Edukasi & Solusi Hukum). Dilengkapi dengan fitur multi-bahasa instan (ID/EN), Full-Stack Manajemen Artikel & Layanan, Panel Pengaturan Visual ramah orang awam, dan kompatibilitas penuh dengan Elementor Gratis.
+Version: 1.0.0
+Requires at least: 6.0
+Tested up to: 6.7
+Requires PHP: 8.0
+License: Proprietary
+Text Domain: nh-custom
+*/
+
+:root {
+  --color-gold: #C5A059;
+  --color-navy: #0A0A0B;
+  --color-secondary: #161618;
+  --color-navbar: #0A0A0B;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-serif: 'Playfair Display', Georgia, serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  color: #0A0A0B;
+  background-color: #f9fafb;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+.font-sans {
+  font-family: var(--font-sans) !important;
+}
+
+.font-serif {
+  font-family: var(--font-serif) !important;
+}
+
+.bg-navy {
+  background-color: var(--color-navy) !important;
+}
+
+.text-navy {
+  color: var(--color-navy) !important;
+}
+
+.border-navy {
+  border-color: var(--color-navy) !important;
+}
+
+.bg-gold {
+  background-color: var(--color-gold) !important;
+}
+
+.text-gold {
+  color: var(--color-gold) !important;
+}
+
+.border-gold {
+  border-color: var(--color-gold) !important;
+}
+
+.bg-navbar {
+  background-color: var(--color-navbar) !important;
+}
+
+/* Hover utilities matching Next.js Tailwind v4 */
+.hover-bg-gold:hover {
+  background-color: var(--color-gold) !important;
+}
+
+.hover-text-gold:hover {
+  color: var(--color-gold) !important;
+}
+
+.hover-text-navy:hover {
+  color: var(--color-navy) !important;
+}
+
+/* Scroll Reveal Animations (Framer Motion fadeInUp equivalent) */
+.nh-reveal {
+  opacity: 0;
+  transform: translateY(36px);
+  transition: opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1), transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.nh-reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Moving pattern background for RICCIEP Values section */
+@keyframes nhPatternMove {
+  0% {
+    background-position: 0px 0px;
+  }
+  100% {
+    background-position: 100px 100px;
+  }
+}
+
+.nh-animated-pattern {
+  background-image: url('https://www.transparenttextures.com/patterns/cubes.png');
+  animation: nhPatternMove 15s linear infinite;
+}
+
+/* Prose / Article Content Typography */
+.nh-prose h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--color-navy);
+  margin-top: 1.75rem;
+  margin-bottom: 1rem;
+  line-height: 1.3;
+}
+
+.nh-prose h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-navy);
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.nh-prose p {
+  margin-bottom: 1.25rem;
+  line-height: 1.85;
+  color: #374151;
+}
+
+.nh-prose ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.nh-prose ol {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.nh-prose li {
+  margin-bottom: 0.5rem;
+  line-height: 1.75;
+}
+
+.nh-prose a {
+  color: var(--color-gold);
+  text-decoration: underline;
+}
+
+.nh-prose img {
+  border-radius: 1rem;
+  max-width: 100%;
+  height: auto;
+  margin: 1.5rem 0;
+}
+
+/* Elementor Full-Width Compatibility */
+.elementor-page .nh-page-container {
+  max-width: 100%;
+  padding: 0;
+}
