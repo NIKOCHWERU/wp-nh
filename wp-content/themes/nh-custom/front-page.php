@@ -401,18 +401,15 @@ $custom_testis = get_option('nh_custom_testimonials', $t_testi['items']);
     </section>
 
     <?php
-    // If user also adds custom Elementor blocks onto the Front Page, render them below
+    // Always call the_content() inside the loop so Elementor editor always detects the content area
     if (have_posts()) :
         while (have_posts()) :
             the_post();
-            $raw_content = get_the_content();
-            if (!empty(trim($raw_content))) :
-                ?>
-                <section class="nh-elementor-extra">
-                    <?php the_content(); ?>
-                </section>
-                <?php
-            endif;
+            ?>
+            <div class="nh-elementor-content">
+                <?php the_content(); ?>
+            </div>
+            <?php
         endwhile;
     endif;
     ?>

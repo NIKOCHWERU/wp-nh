@@ -68,6 +68,19 @@ $email_off  = get_theme_mod('nh_email_official', 'halo@narasumberhukum.com');
             </div>
         </div>
     </div>
+
+    <?php
+    if (have_posts()) :
+        while (have_posts()) :
+            the_post();
+            ?>
+            <div class="nh-elementor-content">
+                <?php the_content(); ?>
+            </div>
+            <?php
+        endwhile;
+    endif;
+    ?>
 </div>
 
 <?php get_footer(); ?>

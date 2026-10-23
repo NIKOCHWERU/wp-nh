@@ -181,13 +181,11 @@ $t_part   = $dict['partners'];
     if (have_posts()) :
         while (have_posts()) :
             the_post();
-            if (!empty(trim(get_the_content()))) :
-                ?>
-                <section class="nh-elementor-extra">
-                    <?php the_content(); ?>
-                </section>
-                <?php
-            endif;
+            ?>
+            <div class="nh-elementor-content">
+                <?php the_content(); ?>
+            </div>
+            <?php
         endwhile;
     endif;
     ?>

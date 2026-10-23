@@ -239,6 +239,19 @@ $unique_cats      = array_keys($categories_set);
     <div class="container mx-auto px-4 max-w-7xl mt-20">
         <?php nh_render_consultation_cta_component(); ?>
     </div>
+
+    <?php
+    if (have_posts()) :
+        while (have_posts()) :
+            the_post();
+            ?>
+            <div class="nh-elementor-content">
+                <?php the_content(); ?>
+            </div>
+            <?php
+        endwhile;
+    endif;
+    ?>
 </div>
 
 <?php get_footer(); ?>
